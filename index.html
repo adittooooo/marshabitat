@@ -1,277 +1,123 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mars Rover Photo Viewer</title>
-  <style>
-    :root{--bg:#0b1020;--card:#0f1724;--accent:#ff6b35;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#071029 0%, #071824 60%);color:#e6eef6;min-height:100vh;}
-    .app{max-width:1100px;margin:28px auto;padding:20px}
-    header{display:flex;gap:16px;align-items:center}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
-
-    .controls{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-    .field{grid-column:span 3}
-    .field.wide{grid-column:span 6}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:var(--card);color:inherit;font-size:14px}
-    .radio-row{display:flex;gap:8px;align-items:center}
-    .radio-row input{width:auto}
-    .actions{display:flex;gap:8px;align-items:center}
-    button.primary{background:linear-gradient(90deg,var(--accent),#ff8d5a);border:0;color:#08101b;font-weight:600}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.05)}
-
-    .meta{margin-top:12px;color:var(--muted);font-size:13px}
-
-    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:18px}
-    .card{background:var(--glass);border-radius:10px;padding:8px;overflow:hidden;display:flex;flex-direction:column;gap:8px}
-    .card img{width:100%;height:170px;object-fit:cover;border-radius:6px}
-    .card .info{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-    .empty{padding:40px;text-align:center;color:var(--muted)}
-
-    .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:16px}
-
-    /* modal */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60}
-    .modal.show{display:flex}
-    .modal .box{width:min(1100px,96%);max-height:92vh;overflow:auto;background:var(--card);border-radius:12px;padding:12px}
-    .modal img{width:100%;height:auto;border-radius:8px}
-    .modal .meta{margin-top:8px;color:var(--muted)}
-
-    @media (max-width:800px){.field{grid-column:span 6}.field.wide{grid-column:span 12}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars Habitat Quiz</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+    }
+    .quiz-container {
+        max-width: 700px;
+        margin: auto;
+        background: #2c2c2c;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px #000;
+    }
+    h1 {
+        text-align: center;
+        color: #ff6f61;
+    }
+    .question {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #3a3a3a;
+        border-radius: 8px;
+    }
+    .question h3 {
+        margin-bottom: 10px;
+        color: #00ff99;
+    }
+    label {
+        display: block;
+        margin: 5px 0;
+        cursor: pointer;
+    }
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+    #submit-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+    #submit-btn:hover {
+        background-color: #ff4a3c;
+    }
+    #result {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #00ff99;
+    }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div>
-        <h1>Mars Rover Photo Viewer</h1>
-        <p class="lead">Browse Curiosity, Opportunity, and Spirit photos from NASA's Mars Rover API. Enter an API key (use <code>DEMO_KEY</code> for limited queries).</p>
-      </div>
-    </header>
+<div class="quiz-container">
+    <h1>Mars Habitat Quiz</h1>
+    <div id="result"></div>
+    <form id="quiz-form">
+        <!-- Questions will be injected here -->
+    </form>
+    <button id="submit-btn" onclick="checkAnswers(event)">Submit</button>
+</div>
 
-    <div class="controls" id="controls">
-      <div class="field">
-        <label for="apiKey">API Key</label>
-        <input id="apiKey" placeholder="DbdniKJ8tCGbUgXIuo27jBNb9tGop0bCWsD7fswB" value="DbdniKJ8tCGbUgXIuo27jBNb9tGop0bCWsD7fswB" />
-      </div>
+<script>
+const quiz = [
+    {q: "Which module manages waste on a Mars base?", options: ["ECLSS", "Waste Management", "Galley", "Fitness"], answer: 1},
+    {q: "Which module provides life support?", options: ["Crew Quarters", "Hygiene", "ECLSS", "Workshop"], answer: 2},
+    {q: "Where do astronauts sleep?", options: ["Crew Quarters", "Galley", "Workshop", "ECLSS"], answer: 0},
+    {q: "Which module is for physical activity?", options: ["Fitness & Exercise", "Galley", "Lab", "Stowage"], answer: 0},
+    {q: "Where is food prepared?", options: ["Galley", "ECLSS", "Lab", "Workshop"], answer: 0},
+    {q: "Which module stores supplies?", options: ["Stowage & Logistics", "ECLSS", "Crew Quarters", "Fitness"], answer: 0},
+    {q: "Which module is for repairs?", options: ["Maintenance Workshop", "Hygiene", "Galley", "Lab"], answer: 0},
+    {q: "Where do astronauts relax?", options: ["Recreation Hub", "ECLSS", "Workshop", "Fitness"], answer: 0},
+    {q: "Which module is for hygiene?", options: ["Hygiene & Sanitation", "Galley", "ECLSS", "Lab"], answer: 0},
+    {q: "Where do experiments happen?", options: ["Laboratory", "Crew Quarters", "Galley", "Workshop"], answer: 0},
+    {q: "What protects astronauts from radiation?", options: ["Insulation", "Radiation Shield", "Galley", "ECLSS"], answer: 1},
+    {q: "Which system provides oxygen?", options: ["ECLSS", "Fitness", "Stowage", "Lab"], answer: 0},
+    {q: "Which module is for storing water?", options: ["ECLSS", "Galley", "Workshop", "Lab"], answer: 0},
+    {q: "Where are spacesuits stored?", options: ["Airlock", "Galley", "Fitness", "Lab"], answer: 0},
+    {q: "Which module is for meal storage?", options: ["Food Storage", "Crew Quarters", "Lab", "Fitness"], answer: 0}
+];
 
-      <div class="field">
-        <label for="rover">Rover</label>
-        <select id="rover">
-          <option value="curiosity">Curiosity</option>
-          <option value="opportunity">Opportunity</option>
-          <option value="spirit">Spirit</option>
-        </select>
-      </div>
+// Generate all questions
+const form = document.getElementById("quiz-form");
+quiz.forEach((q, i) => {
+    let div = document.createElement("div");
+    div.classList.add("question");
+    div.innerHTML = `<h3>Q${i+1}. ${q.q}</h3>` +
+        q.options.map((opt, idx) =>
+            `<label><input type="radio" name="q${i}" value="${idx}"> ${opt}</label>`
+        ).join("");
+    form.appendChild(div);
+});
 
-      <div class="field">
-        <label>Query Type</label>
-        <div class="radio-row">
-          <label><input type="radio" name="qtype" value="sol" checked> Sol</label>
-          <label><input type="radio" name="qtype" value="earth_date"> Earth date</label>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="solInput">Sol (Martian day)</label>
-        <input id="solInput" type="number" min="0" placeholder="e.g. 1000" />
-      </div>
-
-      <div class="field">
-        <label for="dateInput">Earth date</label>
-        <input id="dateInput" type="date" />
-      </div>
-
-      <div class="field">
-        <label for="camera">Camera</label>
-        <select id="camera">
-          <option value="">All</option>
-          <option value="fhaz">FHAZ</option>
-          <option value="rhaz">RHAZ</option>
-          <option value="mast">MAST</option>
-          <option value="chemcam">CHEMCAM</option>
-          <option value="mahli">MAHLI</option>
-          <option value="mardi">MARDI</option>
-          <option value="navcam">NAVCAM</option>
-          <option value="pancam">PANCAM</option>
-          <option value="minites">MINITES</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="page">Page</label>
-        <input id="page" type="number" min="1" value="1" />
-      </div>
-
-      <div class="field actions" style="grid-column:span 12;justify-content:flex-end;margin-top:8px">
-        <button class="ghost" id="loadManifest">Load Manifest</button>
-        <button class="primary" id="fetchBtn">Fetch Photos</button>
-      </div>
-
-      <div class="field wide" style="grid-column:span 12">
-        <div class="meta" id="manifestMeta">Manifest: —</div>
-      </div>
-    </div>
-
-    <div id="gallery" class="gallery"></div>
-    <div id="empty" class="empty" style="display:none">No photos yet — change inputs and click <strong>Fetch Photos</strong>.</div>
-
-    <div class="pager" id="pager" style="display:none">
-      <button id="prevPage" class="ghost">◀ Prev</button>
-      <div id="pageInfo" style="min-width:160px;text-align:center;color:var(--muted)"></div>
-      <button id="nextPage" class="ghost">Next ▶</button>
-    </div>
-
-    <!-- modal -->
-    <div id="modal" class="modal" aria-hidden="true">
-      <div class="box">
-        <button id="closeModal" class="ghost" style="float:right">Close</button>
-        <img id="modalImg" src="" alt="" />
-        <div class="meta" id="modalMeta"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const apiKeyEl = document.getElementById('apiKey');
-    const roverEl = document.getElementById('rover');
-    const solEl = document.getElementById('solInput');
-    const dateEl = document.getElementById('dateInput');
-    const cameraEl = document.getElementById('camera');
-    const pageEl = document.getElementById('page');
-    const fetchBtn = document.getElementById('fetchBtn');
-    const gallery = document.getElementById('gallery');
-    const emptyMsg = document.getElementById('empty');
-    const manifestMeta = document.getElementById('manifestMeta');
-    const loadManifestBtn = document.getElementById('loadManifest');
-    const pager = document.getElementById('pager');
-    const prevPage = document.getElementById('prevPage');
-    const nextPage = document.getElementById('nextPage');
-    const pageInfo = document.getElementById('pageInfo');
-
-    const modal = document.getElementById('modal');
-    const modalImg = document.getElementById('modalImg');
-    const modalMeta = document.getElementById('modalMeta');
-    const closeModal = document.getElementById('closeModal');
-
-    let lastResponse = null;
-
-    function buildQuery(){
-      const key = apiKeyEl.value.trim() || 'DEMO_KEY';
-      const rover = roverEl.value;
-      const page = Math.max(1, parseInt(pageEl.value) || 1);
-      const camera = cameraEl.value;
-      const qtype = document.querySelector('input[name="qtype"]:checked').value;
-      const params = new URLSearchParams();
-      params.set('api_key', key);
-      params.set('page', page);
-      if(camera) params.set('camera', camera);
-      if(qtype === 'sol'){
-        const sol = solEl.value.trim();
-        if(!sol) throw new Error('Please provide a sol (Martian day)');
-        params.set('sol', sol);
-      } else {
-        const date = dateEl.value;
-        if(!date) throw new Error('Please provide an Earth date');
-        params.set('earth_date', date);
-      }
-      return `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?${params.toString()}`;
-    }
-
-    async function fetchPhotos(){
-      gallery.innerHTML='';
-      emptyMsg.style.display='none';
-      pager.style.display='none';
-      try{
-        const url = buildQuery();
-        showStatus('Fetching photos...');
-        const res = await fetch(url);
-        if(!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
-        const data = await res.json();
-        lastResponse = {url, data};
-        renderPhotos(data.photos || []);
-      }catch(err){
-        showError(err.message);
-      }finally{
-        clearStatus();
-      }
-    }
-
-    function renderPhotos(photos){
-      if(!photos || photos.length===0){
-        emptyMsg.style.display='block';
-        return;
-      }
-      emptyMsg.style.display='none';
-      gallery.innerHTML = '';
-      photos.forEach(p => {
-        const card = document.createElement('div'); card.className='card';
-        const img = document.createElement('img'); img.loading='lazy'; img.src = p.img_src; img.alt = `${p.rover.name} ${p.camera.name}`;
-        img.addEventListener('click', ()=>openModal(p));
-        const info = document.createElement('div'); info.className='info';
-        info.innerHTML = `<div>${p.rover.name} • ${p.camera.name}</div><div>${p.earth_date}</div>`;
-        card.appendChild(img); card.appendChild(info);
-        gallery.appendChild(card);
-      });
-
-      // pager
-      const q = new URL(lastResponse.url);
-      const currentPage = parseInt(q.searchParams.get('page') || '1');
-      pageInfo.textContent = `Page ${currentPage} • ${photos.length} results (≤25 per page)`;
-      pager.style.display='flex';
-      prevPage.disabled = currentPage<=1;
-      prevPage.onclick = ()=>{ pageEl.value = Math.max(1, currentPage-1); fetchPhotos(); }
-      nextPage.onclick = ()=>{ pageEl.value = currentPage+1; fetchPhotos(); }
-    }
-
-    function openModal(photo){
-      modalImg.src = photo.img_src.replace('http://','https://');
-      modalMeta.innerHTML = `<strong>${photo.rover.name}</strong> — ${photo.camera.full_name} <br> Sol ${photo.sol} • ${photo.earth_date} • ID ${photo.id}`;
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden','false');
-    }
-    function closeModalFn(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
-    closeModal.addEventListener('click', closeModalFn);
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModalFn(); });
-
-    function showStatus(msg){ manifestMeta.textContent = msg; manifestMeta.style.color = 'var(--muted)'; }
-    function clearStatus(){ manifestMeta.style.color='var(--muted)'; }
-    function showError(msg){ manifestMeta.textContent = 'Error: '+msg; manifestMeta.style.color='#ff9b9b'; }
-
-    // Load manifest for rover
-    async function loadManifest(){
-      const key = apiKeyEl.value.trim() || 'DEMO_KEY';
-      const rover = roverEl.value;
-      try{
-        showStatus('Loading manifest...');
-        const res = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}?api_key=${encodeURIComponent(key)}`);
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const m = data.photo_manifest;
-        manifestMeta.innerHTML = `Manifest: <strong>${m.name}</strong> • Landed ${m.landing_date} • Status ${m.status} • max_sol ${m.max_sol} (max_date ${m.max_date}) • total_photos ${m.total_photos}`;
-      }catch(err){ showError(err.message); }
-    }
-
-    // wire up
-    fetchBtn.addEventListener('click', ()=>{ fetchPhotos(); });
-    loadManifestBtn.addEventListener('click', ()=>{ loadManifest(); });
-
-    // quick UX: enable/disable sol/date depending on query type
-    document.querySelectorAll('input[name="qtype"]').forEach(el=>el.addEventListener('change', ()=>{
-      const q = document.querySelector('input[name="qtype"]:checked').value;
-      if(q==='sol'){ solEl.disabled=false; dateEl.disabled=true; dateEl.value=''; }
-      else { solEl.disabled=true; solEl.value=''; dateEl.disabled=false; }
-    }));
-    // init
-    (function(){ document.querySelector('input[name="qtype"][value="sol"]').checked=true; dateEl.disabled=true; })();
-
-    // helpful: allow pressing Enter in any control to fetch
-    document.getElementById('controls').addEventListener('keydown', (e)=>{ if(e.key==='Enter') fetchPhotos(); });
-
-  </script>
+function checkAnswers(e) {
+    e.preventDefault();
+    let score = 0;
+    quiz.forEach((q, i) => {
+        let selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && parseInt(selected.value) === q.answer) {
+            score++;
+        }
+    });
+    document.getElementById("result").innerText = `You scored ${score} / ${quiz.length}`;
+}
+</script>
 </body>
 </html>
